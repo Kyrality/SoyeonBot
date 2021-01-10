@@ -71,7 +71,7 @@ class Lastfm(commands.Cog):
             artist_name = data["artist"]["name"]
             song_name = data["name"]
             number = data["playcount"]
-            track.add_field(name=f"{rank}. ({number} plays)", value=f"{song_name} by {artist_name}", inline=False)
+            track.add_field(name=f"{rank}. ({number} plays )", value=f"{song_name} by {artist_name}", inline=False)
 
         await ctx.channel.send(embed=track)
 
