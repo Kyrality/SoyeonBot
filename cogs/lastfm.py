@@ -74,16 +74,37 @@ class Lastfm(commands.Cog):
 
         response = requests.get(lastfm_root_url, params=tt_params).json()
 
-        track = discord.Embed(title=f"{self.get_user(ctx)}'s top tracks", description=f"({period})")
+        tracks = discord.Embed(title=f"{self.get_user(ctx)}'s top tracks", description=f"({period})")
 
         for data in response["toptracks"]["track"]:
             rank = data["@attr"]["rank"]
             artist_name = data["artist"]["name"]
             song_name = data["name"]
             number = data["playcount"]
-            track.add_field(name=f"{rank}. ({number} plays)", value=f"{song_name} by {artist_name}", inline=False)
+            tracks.add_field(name=f"{rank}. ({number} plays)", value=f"{song_name} by {artist_name}", inline=False)
 
-        await ctx.channel.send(embed=track)
+        await ctx.channel.send(embed=tracks)
+
+    @commands.command(aliases=['topartists', 'ta'])
+    async def top_artists(self, ctx, period='overall'):
+
+        method = 'user.getTopArtists'
+        user = self.get_user(ctx)
+        time_period = self.get_time_period(period)
+
+        tt_params = self.get_params(method, user, time_period)
+
+        response = requests.get(lastfm_root_url, params=tt_params).json()
+
+        artists = discord.Embed(title=f"{self.get_user(ctx)}'s top artis", description=f"({period})")
+
+        for data in response["topartists"]["artist"]:
+            rank = data["@attr"]["rank"]
+            artist_name = data["name"]
+            number = data["playcount"]
+            artists.add_field(name=f"{rank}. ({number} plays)", value=f"{artist_name}", inline=False)
+
+        await ctx.channel.send(embed=artists)
 
 
 def setup(client):
