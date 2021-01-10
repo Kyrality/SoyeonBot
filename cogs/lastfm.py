@@ -51,17 +51,15 @@ class Lastfm(commands.Cog):
 
     @commands.command(aliases=['setuser'])
     async def set_user(self, ctx, username):
+
         with open('lastfm_user.json') as f:
             lastfm_usernames = json.load(f)
 
-        if lastfm_usernames[str(ctx.author)] == username:
-            await ctx.channel.send("Username already set!")
+        lastfm_usernames[str(ctx.author)] = username
 
-        else:
-            lastfm_usernames[str(ctx.author)] = username
-            with open('lastfm_user.json', 'w') as f:
-                json.dump(lastfm_usernames, f, indent=4)
-            await ctx.channel.send(f'{ctx.author.mention}, your lastfm account, {username}, has been set')
+        with open('lastfm_user.json', 'w') as f:
+            json.dump(lastfm_usernames, f, indent=4)
+        await ctx.channel.send(f'{ctx.author.mention}, your lastfm account, {username}, has been set')
 
     @commands.command(aliases=['toptracks', 'tt'])
     async def top_tracks(self, ctx, period='overall'):
