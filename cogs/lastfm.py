@@ -18,7 +18,7 @@ class Lastfm(commands.Cog):
         return member_username
 
     @staticmethod
-    def time_period(period):
+    def get_time_period(period):
         week = ["7day", "7 days", "7days", "7 day", "week"]
         month = ["1month", "month"]
         three_months = ["3month", "3 months"]
@@ -37,6 +37,18 @@ class Lastfm(commands.Cog):
         else:
             return "overall"
 
+    @staticmethod
+    def get_params(method, user, period):
+        params = {
+            "user": user,
+            "period": period,
+            "api_key": lastfm_api_key,
+            "method": method,
+            "format": "json",
+            "limit": "10"
+        }
+        return params
+
     @commands.command(aliases=['setuser'])
     async def set_user(self, ctx, username):
         with open('lastfm_user.json') as f:
@@ -54,18 +66,16 @@ class Lastfm(commands.Cog):
     @commands.command(aliases=['toptracks', 'tt'])
     async def top_tracks(self, ctx, period='overall'):
 
-        tt_params = {
-            "user": self.get_user(ctx),
-            "period": self.time_period(period),
-            "api_key": lastfm_api_key,
-            "method": "user.getTopTracks",
-            "format": "json",
-            "limit": "10"
-        }
+        method = "user.getTopTracks"
+        user = self.get_user(ctx)
+        time_period = self.get_time_period(period)
+
+        tt_params = self.get_params(method, user, time_period)
 
         response = requests.get(lastfm_root_url, params=tt_params).json()
 
         track = discord.Embed(title=f"{self.get_user(ctx)}'s top tracks", description=f"({period})")
+
         for data in response["toptracks"]["track"]:
             rank = data["@attr"]["rank"]
             artist_name = data["artist"]["name"]
