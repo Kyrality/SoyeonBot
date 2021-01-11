@@ -70,6 +70,32 @@ class Lastfm(commands.Cog):
             json.dump(lastfm_usernames, f, indent=4)
         await ctx.channel.send(f'{ctx.author.mention}, your lastfm account, {username}, has been set')
 
+    @commands.command(aliases=['nowplaying', 'np'])
+    async def now_playing(self, ctx):
+        """Shows currently playing track. Format: ^nowplaying
+        Aliases: np"""
+
+        method = "user.getRecentTracks"
+        user = self.get_user(ctx)
+
+        rt_params = self.get_params(method, user, period=None)
+
+        response = requests.get(lastfm_root_url, params=rt_params).json()["recenttracks"]["track"][0]
+
+        artists = discord.Embed(title=f"{self.get_user(ctx)}'s recent tracks")
+
+        try:
+            time_in = f'Listened on {response["date"]["#text"]}'
+            time = time_in.replace(",", " at")
+        except:
+            time = "Currently Listening"
+        artist_name = response["artist"]["#text"]
+        album_name = response["album"]["#text"]
+        song_name = response["name"]
+        artists.add_field(name=f"{song_name}", value=f"On {album_name} by {artist_name}\n{time}", inline=False)
+
+        await ctx.channel.send(embed=artists)
+
     @commands.command(aliases=['toptracks', 'tt'])
     async def top_tracks(self, ctx, *, period='overall'):
         """Shows top 10 tracks for associated LastFM Account. Format: ^toptracks [time period]
