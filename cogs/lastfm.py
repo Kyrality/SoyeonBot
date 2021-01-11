@@ -12,6 +12,7 @@ class Lastfm(commands.Cog):
 
     @staticmethod
     def get_user(ctx):
+        """Gets LastFM Username associated with user"""
         with open('lastfm_user.json') as f:
             lastfm_usernames = json.load(f)
             member_username = lastfm_usernames[str(ctx.author)]
@@ -19,27 +20,31 @@ class Lastfm(commands.Cog):
 
     @staticmethod
     def get_time_period(period_in):
-        period = period_in.lower()
-        week = ["7day", "7days", "7 day", "week"]
+        """Converts period input into response format"""
+        period_lower = period_in.lower()
+        period = period_lower.replace(" ", "")
+
+        _1week = ["7day", "7days", "week"]
         month = ["1month", "month"]
         three_months = ["3month", "3months"]
         six_months = ["6month", "6months"]
-        year = ["12month", "12months", "year"]
-        if period in week:
-            return week[0]
+        _1year = ["12month", "12months", "year"]
+        if period in _1week:
+            return _1week[0]
         elif period in month:
             return month[0]
         elif period in three_months:
             return three_months[0]
         elif period in six_months:
             return six_months[0]
-        elif period in year:
-            return year[0]
+        elif period in _1year:
+            return _1year[0]
         else:
             return "overall"
 
     @staticmethod
     def get_params(method, user, period):
+        """Formats paramaters for LastFM API request"""
         params = {
             "user": user,
             "period": period,
@@ -52,6 +57,7 @@ class Lastfm(commands.Cog):
 
     @commands.command(aliases=['setuser'])
     async def set_user(self, ctx, username):
+        """Sets a LastFM account with user. Format: ^setuser [lastfm username]"""
 
         with open('lastfm_user.json') as f:
             lastfm_usernames = json.load(f)
@@ -63,7 +69,10 @@ class Lastfm(commands.Cog):
         await ctx.channel.send(f'{ctx.author.mention}, your lastfm account, {username}, has been set')
 
     @commands.command(aliases=['toptracks', 'tt'])
-    async def top_tracks(self, ctx, period='overall'):
+    async def top_tracks(self, ctx, *, period='overall'):
+        """Shows top 10 tracks for associated LastFM Account. Format: ^toptracks [time period]
+        Aliases: tt
+        Time periods: week, month, 2 months, 6 months, year"""
 
         method = "user.getTopTracks"
         user = self.get_user(ctx)
@@ -73,7 +82,7 @@ class Lastfm(commands.Cog):
 
         response = requests.get(lastfm_root_url, params=tt_params).json()
 
-        tracks = discord.Embed(title=f"{self.get_user(ctx)}'s top tracks", description=f"({period})")
+        tracks = discord.Embed(title=f"{self.get_user(ctx)}'s top tracks", description=f"({time_period})")
 
         for data in response["toptracks"]["track"]:
             rank = data["@attr"]["rank"]
@@ -85,7 +94,10 @@ class Lastfm(commands.Cog):
         await ctx.channel.send(embed=tracks)
 
     @commands.command(aliases=['topartists', 'ta'])
-    async def top_artists(self, ctx, period='overall'):
+    async def top_artists(self, ctx, *, period='overall'):
+        """Shows top 10 artists for associated LastFM Account. Format: ^topartists [time period]
+        Aliases: ta
+        Time periods: week, month, 2 months, 6 months, year"""
 
         method = 'user.getTopArtists'
         user = self.get_user(ctx)
@@ -95,7 +107,7 @@ class Lastfm(commands.Cog):
 
         response = requests.get(lastfm_root_url, params=tt_params).json()
 
-        artists = discord.Embed(title=f"{self.get_user(ctx)}'s top artis", description=f"({period})")
+        artists = discord.Embed(title=f"{self.get_user(ctx)}'s top artis", description=f"({time_period})")
 
         for data in response["topartists"]["artist"]:
             rank = data["@attr"]["rank"]

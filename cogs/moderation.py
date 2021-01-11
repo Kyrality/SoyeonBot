@@ -9,12 +9,14 @@ class Moderation(commands.Cog):
         self.client = client
 
     def get_welcome_id(self, member):
+        """Gets chosen welcome message channel ID for guild"""
         with open('welcome_id.json') as f:
             channel = json.load(f)
 
         return channel[str(member.guild.id)]
 
     def get_welcome_msg(self, member):
+        """Gets chosen welcome message for guild"""
         with open('welcome_msg.json') as f:
             msg = json.load(f)
 
@@ -22,10 +24,12 @@ class Moderation(commands.Cog):
 
     @commands.command()
     async def join(self, ctx):
+        """Simulates an on_member_join event"""
         await self.on_member_join(ctx.author)
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
+        """Sends a welcome message to server chosen"""
 
         channel_s = self.client.get_channel(self.get_welcome_id(member))
         msg = self.get_welcome_msg(member)
@@ -34,6 +38,7 @@ class Moderation(commands.Cog):
 
     @commands.command()
     async def changeprefix(self, ctx, new_pre):
+        """Changes the server prefix for Soyeon Bot. Default is '^'."""
         with open('prefixes.json', 'r') as f:
             prefixes = json.load(f)
 
@@ -47,6 +52,7 @@ class Moderation(commands.Cog):
     @commands.command(aliases=['setwelcome'])
     @commands.has_permissions()
     async def set_welcome(self, ctx, channel, *, text):
+        """Sets a welcome message for your server. Format: ^setwelcome [channel] [message]"""
         with open('welcome_msg.json', 'r') as f:
             setwelcome = json.load(f)
 
@@ -69,6 +75,7 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.has_permissions()
     async def kick(self, ctx, member: discord.Member, *, reason=None):
+        """Kicks a member from the server. Format: ^kick [member] [reason]"""
         if reason is None:
             await member.send("You have been kicked")
         else:
@@ -78,12 +85,14 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason=None):
+        """Bans a member from the server. Format: ^ban [member] [reason]"""
         await member.send(f'You have been banned for {reason}')
         await member.ban(reason=reason)
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
     async def unban(self, ctx, *, member):
+        """Unbans a member from the server. Format: ^unban [member]"""
         banned_users = await ctx.guild.bans()
         member_n, member_dis = member.split("#")
         for ban_entry in banned_users:
@@ -95,6 +104,7 @@ class Moderation(commands.Cog):
 
     @commands.command()
     async def clear(self, ctx, amount=5):
+        """Clears a given number of messages. Format: ^clear [number]"""
         await ctx.channel.purge(limit=amount)
 
 

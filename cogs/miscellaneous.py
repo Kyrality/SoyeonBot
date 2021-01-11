@@ -23,10 +23,12 @@ class Miscellaneous(commands.Cog):
 
     @commands.command()
     async def users(self, ctx):
+        """Shows number of members in server"""
         await ctx.send(f"""# of Members is {len(ctx.guild.members)}""")
 
     @commands.command(aliases=['8ball'])
     async def _8ball(self, ctx, *, question):
+        """Responds either affirming or refuting input statement. Format: ^8ball [yes/no statement]"""
         responses = ["It is certain.",
                      "It is decidedly so.",
                      "Without a doubt.",
@@ -50,6 +52,7 @@ class Miscellaneous(commands.Cog):
 
     @commands.command()
     async def say(self, ctx, *, message):
+        """Commands bot to say a message. Format: ^say [message]"""
         await ctx.channel.purge(limit=1)
         await ctx.channel.send(message)
 

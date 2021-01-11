@@ -40,18 +40,21 @@ async def on_guild_remove(guild):
 
 @client.command()
 async def load(ctx, extension):
+    """Loads the selected cog. Format: ^load [extension]"""
     client.load_extension(f'cogs.{extension}')
     await ctx.send(f'{extension} extension loaded.')
 
 
 @client.command()
 async def unload(ctx, extension):
+    """Unloads the selected cog. Format: ^unload [extension]"""
     client.unload_extension(f'cogs.{extension}')
     await ctx.send(f'{extension} extension unloaded.')
 
 
 @client.command()
 async def reload(ctx, extension):
+    """Reloads the selected cog. Format: ^reload [extension]"""
     client.unload_extension(f'cogs.{extension}')
     client.load_extension(f'cogs.{extension}')
     await ctx.send(f'{extension} extension reloaded.')
