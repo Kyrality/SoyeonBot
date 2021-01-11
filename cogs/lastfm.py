@@ -147,7 +147,7 @@ class Lastfm(commands.Cog):
     @commands.command(aliases=['recenttracks', 'rt'])
     async def recent_tracks(self, ctx):
         """Shows last 10 recent tracks for associated LastFM account. Format: ^recenttracks
-        Aliases: ta"""
+        Aliases: rt"""
 
         method = 'user.getRecentTracks'
         user = self.get_user(ctx)

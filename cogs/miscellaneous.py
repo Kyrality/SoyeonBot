@@ -14,7 +14,7 @@ class Miscellaneous(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        await self.client.change_presence(status=discord.Status.online, activity=discord.Game('testing beep boop'))
+        await self.client.change_presence(status=discord.Status.online, activity=discord.Game('I burn'))
         print("Bot is online")
 
     @commands.command()
