@@ -43,16 +43,18 @@ class Lastfm(commands.Cog):
             return "overall"
 
     @staticmethod
-    def get_params(method, user, period):
+    def get_params(method, user, period=None):
         """Formats paramaters for LastFM API request"""
         params = {
             "user": user,
-            "period": period,
             "api_key": lastfm_api_key,
             "method": method,
             "format": "json",
             "limit": "10"
         }
+        if period:
+            params['period'] = period
+
         return params
 
     @commands.command(aliases=['setuser'])
@@ -103,9 +105,9 @@ class Lastfm(commands.Cog):
         user = self.get_user(ctx)
         time_period = self.get_time_period(period)
 
-        tt_params = self.get_params(method, user, time_period)
+        ta_params = self.get_params(method, user, time_period)
 
-        response = requests.get(lastfm_root_url, params=tt_params).json()
+        response = requests.get(lastfm_root_url, params=ta_params).json()
 
         artists = discord.Embed(title=f"{self.get_user(ctx)}'s top artis", description=f"({time_period})")
 
@@ -127,9 +129,9 @@ class Lastfm(commands.Cog):
         user = self.get_user(ctx)
         time_period = self.get_time_period(period)
 
-        tt_params = self.get_params(method, user, time_period)
+        tal_params = self.get_params(method, user, time_period)
 
-        response = requests.get(lastfm_root_url, params=tt_params).json()
+        response = requests.get(lastfm_root_url, params=tal_params).json()
 
         albums = discord.Embed(title=f"{self.get_user(ctx)}'s top albums", description=f"({time_period})")
 
@@ -141,6 +143,33 @@ class Lastfm(commands.Cog):
             albums.add_field(name=f"{rank}. ({number} plays)", value=f"{album_name} by {artist_name}", inline=False)
 
         await ctx.channel.send(embed=albums)
+
+    @commands.command(aliases=['recenttracks', 'rt'])
+    async def recent_tracks(self, ctx):
+        """Shows last 10 recent tracks for associated LastFM account. Format: ^recenttracks
+        Aliases: ta"""
+
+        method = 'user.getRecentTracks'
+        user = self.get_user(ctx)
+
+        rt_params = self.get_params(method, user, period=None)
+
+        response = requests.get(lastfm_root_url, params=rt_params).json()
+
+        artists = discord.Embed(title=f"{self.get_user(ctx)}'s recent tracks")
+
+        for data in response["recenttracks"]["track"]:
+            try:
+                time_in = f'Listened on {data["date"]["#text"]}'
+                time = time_in.replace(",", " at")
+            except:
+                time = "Currently Listening"
+            artist_name = data["artist"]["#text"]
+            album_name = data["album"]["#text"]
+            song_name = data["name"]
+            artists.add_field(name=f"{song_name}", value=f"On {album_name} by {artist_name}\n{time}", inline=False)
+
+        await ctx.channel.send(embed=artists)
 
 
 def setup(client):
