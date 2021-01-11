@@ -117,6 +117,31 @@ class Lastfm(commands.Cog):
 
         await ctx.channel.send(embed=artists)
 
+    @commands.command(aliases=['topalbums', 'tal'])
+    async def top_albums(self, ctx, *, period='overall'):
+        """Shows top 10 albums for associated LastFM Account. Format: ^topalbums [time period]
+        Aliases: tal
+        Time periods: week, month, 2 months, 6 months, year"""
+
+        method = 'user.getTopAlbums'
+        user = self.get_user(ctx)
+        time_period = self.get_time_period(period)
+
+        tt_params = self.get_params(method, user, time_period)
+
+        response = requests.get(lastfm_root_url, params=tt_params).json()
+
+        albums = discord.Embed(title=f"{self.get_user(ctx)}'s top albums", description=f"({time_period})")
+
+        for data in response["topalbums"]["album"]:
+            rank = data["@attr"]["rank"]
+            artist_name = data["artist"]["name"]
+            album_name = data["name"]
+            number = data["playcount"]
+            albums.add_field(name=f"{rank}. ({number} plays)", value=f"{album_name} by {artist_name}", inline=False)
+
+        await ctx.channel.send(embed=albums)
+
 
 def setup(client):
     client.add_cog(Lastfm(client))
