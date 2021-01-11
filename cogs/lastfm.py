@@ -18,12 +18,13 @@ class Lastfm(commands.Cog):
         return member_username
 
     @staticmethod
-    def get_time_period(period):
-        week = ["7day", "7 days", "7days", "7 day", "week"]
+    def get_time_period(period_in):
+        period = period_in.lower()
+        week = ["7day", "7days", "7 day", "week"]
         month = ["1month", "month"]
-        three_months = ["3month", "3 months"]
-        six_months = ["6month", "6 months"]
-        year = ["12month", "12months", "year", "12 months"]
+        three_months = ["3month", "3months"]
+        six_months = ["6month", "6months"]
+        year = ["12month", "12months", "year"]
         if period in week:
             return week[0]
         elif period in month:
