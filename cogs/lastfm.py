@@ -82,7 +82,7 @@ class Lastfm(commands.Cog):
 
         response = requests.get(lastfm_root_url, params=rt_params).json()["recenttracks"]["track"][0]
 
-        artists = discord.Embed(title=f"{self.get_user(ctx)}'s recent tracks")
+        artists = discord.Embed(title=f"{self.get_user(ctx)}'s last listened")
 
         try:
             time_in = f'Listened on {response["date"]["#text"]}'
