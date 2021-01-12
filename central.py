@@ -39,6 +39,7 @@ async def on_guild_remove(guild):
 
 
 @client.command()
+@commands.has_permissions(manage_guild=True)
 async def load(ctx, extension):
     """Loads the selected cog. Format: ^load [extension]"""
     client.load_extension(f'cogs.{extension}')
@@ -46,6 +47,7 @@ async def load(ctx, extension):
 
 
 @client.command()
+@commands.has_permissions(manage_guild=True)
 async def unload(ctx, extension):
     """Unloads the selected cog. Format: ^unload [extension]"""
     client.unload_extension(f'cogs.{extension}')
@@ -53,6 +55,7 @@ async def unload(ctx, extension):
 
 
 @client.command()
+@commands.has_permissions(manage_guild=True)
 async def reload(ctx, extension):
     """Reloads the selected cog. Format: ^reload [extension]"""
     client.unload_extension(f'cogs.{extension}')

@@ -46,14 +46,16 @@ class Lastfm(commands.Cog):
     def get_params(method, user, period=None):
         """Formats paramaters for LastFM API request"""
         params = {
-            "user": user,
             "api_key": lastfm_api_key,
-            "method": method,
             "format": "json",
             "limit": "10"
         }
         if period:
             params['period'] = period
+        if user:
+            params['user'] = user
+        if method:
+            params['method'] = method
 
         return params
 
@@ -110,7 +112,7 @@ class Lastfm(commands.Cog):
 
         response = requests.get(lastfm_root_url, params=tt_params).json()
 
-        tracks = discord.Embed(title=f"{self.get_user(ctx)}'s top tracks", description=f"({time_period})")
+        tracks = discord.Embed(title=f"{self.get_user(ctx)}'s top tracks", description=f"({time_period})", color=0x3DFFBE)
 
         for data in response["toptracks"]["track"]:
             rank = data["@attr"]["rank"]
@@ -135,7 +137,7 @@ class Lastfm(commands.Cog):
 
         response = requests.get(lastfm_root_url, params=ta_params).json()
 
-        artists = discord.Embed(title=f"{self.get_user(ctx)}'s top artis", description=f"({time_period})")
+        artists = discord.Embed(title=f"{self.get_user(ctx)}'s top artis", description=f"({time_period})", color=0x3DFFBE)
 
         for data in response["topartists"]["artist"]:
             rank = data["@attr"]["rank"]
@@ -159,7 +161,7 @@ class Lastfm(commands.Cog):
 
         response = requests.get(lastfm_root_url, params=tal_params).json()
 
-        albums = discord.Embed(title=f"{self.get_user(ctx)}'s top albums", description=f"({time_period})")
+        albums = discord.Embed(title=f"{self.get_user(ctx)}'s top albums", description=f"({time_period})", color=0x3DFFBE)
 
         for data in response["topalbums"]["album"]:
             rank = data["@attr"]["rank"]
@@ -182,7 +184,7 @@ class Lastfm(commands.Cog):
 
         response = requests.get(lastfm_root_url, params=rt_params).json()
 
-        artists = discord.Embed(title=f"{self.get_user(ctx)}'s recent tracks")
+        artists = discord.Embed(title=f"{self.get_user(ctx)}'s recent tracks", color=0x3DFFBE)
 
         for data in response["recenttracks"]["track"]:
             try:

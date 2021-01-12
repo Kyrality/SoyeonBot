@@ -39,6 +39,7 @@ class Moderation(commands.Cog):
         await channel_s.send(f'{msg}')
 
     @commands.command(aliases=['changeprefix', 'setprefix'])
+    @commands.has_permissions(manage_guild=True)
     async def change_prefix(self, ctx, *, new_pre):
         """Changes the server prefix for Soyeon Bot. Default is '^'.
         Aliases: changeprefix, setprefix"""
@@ -53,7 +54,7 @@ class Moderation(commands.Cog):
         await ctx.send(f'Prefix changed to `{new_pre}`')
 
     @commands.command(aliases=['setwelcome'])
-    @commands.has_permissions()
+    @commands.has_permissions(manage_guild=True)
     async def set_welcome(self, ctx, channel, *, text):
         """Sets a welcome message for your server. Format: ^setwelcome [channel] [message]"""
         with open('welcome_msg.json', 'r') as f:
@@ -76,7 +77,7 @@ class Moderation(commands.Cog):
         await ctx.send(f'Welcome message set to: \n{text}\nIt will be sent in the #{channel} channel')
 
     @commands.command()
-    @commands.has_permissions()
+    @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason=None):
         """Kicks a member from the server. Format: ^kick [member] [reason]"""
         if reason is None:
