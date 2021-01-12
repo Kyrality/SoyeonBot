@@ -53,7 +53,7 @@ class Miscellaneous(commands.Cog):
     @commands.command()
     async def say(self, ctx, *, message):
         """Commands bot to say a message. Format: ^say [message]"""
-        await ctx.channel.purge(limit=1)
+        await ctx.message.delete()
         await ctx.channel.send(message)
 
 

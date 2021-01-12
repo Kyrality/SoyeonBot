@@ -8,14 +8,16 @@ class Moderation(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    def get_welcome_id(self, member):
+    @staticmethod
+    def get_welcome_id(member):
         """Gets chosen welcome message channel ID for guild"""
         with open('welcome_id.json') as f:
             channel = json.load(f)
 
         return channel[str(member.guild.id)]
 
-    def get_welcome_msg(self, member):
+    @staticmethod
+    def get_welcome_msg(member):
         """Gets chosen welcome message for guild"""
         with open('welcome_msg.json') as f:
             msg = json.load(f)
@@ -36,9 +38,10 @@ class Moderation(commands.Cog):
 
         await channel_s.send(f'{msg}')
 
-    @commands.command()
-    async def changeprefix(self, ctx, new_pre):
-        """Changes the server prefix for Soyeon Bot. Default is '^'."""
+    @commands.command(aliases=['changeprefix', 'setprefix'])
+    async def change_prefix(self, ctx, *, new_pre):
+        """Changes the server prefix for Soyeon Bot. Default is '^'.
+        Aliases: changeprefix, setprefix"""
         with open('prefixes.json', 'r') as f:
             prefixes = json.load(f)
 
@@ -47,7 +50,7 @@ class Moderation(commands.Cog):
         with open('prefixes.json', 'w') as f:
             json.dump(prefixes, f, indent=4)
 
-        await ctx.send(f'Prefix changed to {new_pre}')
+        await ctx.send(f'Prefix changed to `{new_pre}`')
 
     @commands.command(aliases=['setwelcome'])
     @commands.has_permissions()
