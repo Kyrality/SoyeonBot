@@ -1,4 +1,3 @@
-import requests
 import discord
 from discord.ext import commands
 import json
@@ -227,7 +226,7 @@ class Lastfm(commands.Cog):
 
         rt_params = self.get_params(method, user, time_period, limit)
 
-        response = requests.get(lastfm_root_url, params=rt_params).json()
+        response = await self.get_fm_response(rt_params)
 
         tracks = discord.Embed(title=f"{self.get_user(ctx)}'s top {artist} tracks", description=f"{time_period}", color=0x3DFFBE)
 
