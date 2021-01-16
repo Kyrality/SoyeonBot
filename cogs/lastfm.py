@@ -2,7 +2,7 @@ import requests
 import discord
 from discord.ext import commands
 import json
-from keys import lastfm_api_key, lastfm_root_url
+from keys import lastfm_api_key, lastfm_root_url, client_session
 
 
 class Lastfm(commands.Cog):
@@ -61,6 +61,12 @@ class Lastfm(commands.Cog):
             params['page'] = page
         return params
 
+    @staticmethod
+    async def get_fm_response(params):
+        """Recieves a LastFM Response"""
+        async with client_session.get(lastfm_root_url, params=params) as r:
+            return await r.json()
+
     @commands.command(aliases=['setuser'])
     async def set_user(self, ctx, username):
         """Sets a LastFM account with user. Format: ^setuser [lastfm username]"""
@@ -84,18 +90,19 @@ class Lastfm(commands.Cog):
 
         rt_params = self.get_params(method, user, period=None)
 
-        response = requests.get(lastfm_root_url, params=rt_params).json()["recenttracks"]["track"][0]
+        response = await self.get_fm_response(rt_params)
+        data = response["recenttracks"]["track"][0]
 
         artists = discord.Embed(title=f"{self.get_user(ctx)}'s last listened", color=0x3DFFBE)
 
         try:
-            time_in = f'Listened on {response["date"]["#text"]}'
+            time_in = f'Listened on {data["date"]["#text"]}'
             time = time_in.replace(",", " at")
         except:
             time = "Currently Listening"
-        artist_name = response["artist"]["#text"]
-        album_name = response["album"]["#text"]
-        song_name = response["name"]
+        artist_name = data["artist"]["#text"]
+        album_name = data["album"]["#text"]
+        song_name = data["name"]
         artists.add_field(name=f"{song_name}", value=f"On {album_name} by {artist_name}\n{time}", inline=False)
 
         await ctx.channel.send(embed=artists)
@@ -112,7 +119,7 @@ class Lastfm(commands.Cog):
 
         tt_params = self.get_params(method, user, time_period)
 
-        response = requests.get(lastfm_root_url, params=tt_params).json()
+        response = await self.get_fm_response(tt_params)
 
         tracks = discord.Embed(title=f"{self.get_user(ctx)}'s top tracks", description=f"({time_period})", color=0x3DFFBE)
 
@@ -137,7 +144,7 @@ class Lastfm(commands.Cog):
 
         ta_params = self.get_params(method, user, time_period)
 
-        response = requests.get(lastfm_root_url, params=ta_params).json()
+        response = await self.get_fm_response(ta_params)
 
         artists = discord.Embed(title=f"{self.get_user(ctx)}'s top artis", description=f"({time_period})", color=0x3DFFBE)
 
@@ -161,7 +168,7 @@ class Lastfm(commands.Cog):
 
         tal_params = self.get_params(method, user, time_period)
 
-        response = requests.get(lastfm_root_url, params=tal_params).json()
+        response = await self.get_fm_response(tal_params)
 
         albums = discord.Embed(title=f"{self.get_user(ctx)}'s top albums", description=f"({time_period})", color=0x3DFFBE)
 
@@ -184,7 +191,7 @@ class Lastfm(commands.Cog):
 
         rt_params = self.get_params(method, user, period=None)
 
-        response = requests.get(lastfm_root_url, params=rt_params).json()
+        response = await self.get_fm_response(rt_params)
 
         artists = discord.Embed(title=f"{self.get_user(ctx)}'s recent tracks", color=0x3DFFBE)
 
