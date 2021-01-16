@@ -43,12 +43,11 @@ class Lastfm(commands.Cog):
             return "overall"
 
     @staticmethod
-    def get_params(method, user, period=None):
+    def get_params(method, user, period=None, limit=10, page=1):
         """Formats paramaters for LastFM API request"""
         params = {
             "api_key": lastfm_api_key,
             "format": "json",
-            "limit": "10"
         }
         if period:
             params['period'] = period
@@ -56,7 +55,10 @@ class Lastfm(commands.Cog):
             params['user'] = user
         if method:
             params['method'] = method
-
+        if limit:
+            params['limit'] = limit
+        if page:
+            params['page'] = page
         return params
 
     @commands.command(aliases=['setuser'])
@@ -84,7 +86,7 @@ class Lastfm(commands.Cog):
 
         response = requests.get(lastfm_root_url, params=rt_params).json()["recenttracks"]["track"][0]
 
-        artists = discord.Embed(title=f"{self.get_user(ctx)}'s last listened")
+        artists = discord.Embed(title=f"{self.get_user(ctx)}'s last listened", color=0x3DFFBE)
 
         try:
             time_in = f'Listened on {response["date"]["#text"]}'
@@ -102,7 +104,7 @@ class Lastfm(commands.Cog):
     async def top_tracks(self, ctx, *, period='overall'):
         """Shows top 10 tracks for associated LastFM Account. Format: ^toptracks [time period]
         Aliases: tt
-        Time periods: week, month, 2 months, 6 months, year"""
+        Time periods: week, month, 2 months, 6 months, year. Defaults to overall."""
 
         method = "user.getTopTracks"
         user = self.get_user(ctx)
@@ -127,7 +129,7 @@ class Lastfm(commands.Cog):
     async def top_artists(self, ctx, *, period='overall'):
         """Shows top 10 artists for associated LastFM Account. Format: ^topartists [time period]
         Aliases: ta
-        Time periods: week, month, 2 months, 6 months, year"""
+        Time periods: week, month, 2 months, 6 months, year. Defaults to overall."""
 
         method = 'user.getTopArtists'
         user = self.get_user(ctx)
@@ -151,7 +153,7 @@ class Lastfm(commands.Cog):
     async def top_albums(self, ctx, *, period='overall'):
         """Shows top 10 albums for associated LastFM Account. Format: ^topalbums [time period]
         Aliases: tal
-        Time periods: week, month, 2 months, 6 months, year"""
+        Time periods: week, month, 2 months, 6 months, year. Defaults to overall."""
 
         method = 'user.getTopAlbums'
         user = self.get_user(ctx)
@@ -198,6 +200,42 @@ class Lastfm(commands.Cog):
             artists.add_field(name=f"{song_name}", value=f"On {album_name} by {artist_name}\n{time}", inline=False)
 
         await ctx.channel.send(embed=artists)
+
+    @commands.command(aliases=['tto', 'toptracksof'])
+    async def top_tracks_of(self, ctx, *, artist_period):
+        """Shows most listened tracks of chosen artist for associated LastFM account. Format: ^toptracksof (artist), (period)
+        Aliases: tto
+        Time periods: week, month, 2 months, 6 months, year. Defaults to overall."""
+
+        try:
+            artist, period = artist_period.split(",")
+            time_period = self.get_time_period(period)
+        except:
+            artist = artist_period
+            time_period = 'overall'
+
+        method = 'user.getTopTracks'
+        user = self.get_user(ctx)
+        limit = 200
+
+        rt_params = self.get_params(method, user, time_period, limit)
+
+        response = requests.get(lastfm_root_url, params=rt_params).json()
+
+        tracks = discord.Embed(title=f"{self.get_user(ctx)}'s top {artist} tracks", description=f"{time_period}", color=0x3DFFBE)
+
+        rank = 1
+
+        for data in response["toptracks"]["track"]:
+            if data["artist"]["name"] == artist and rank <= 10:
+                song_name = data["name"]
+                number = data["playcount"]
+                tracks.add_field(name=f"{rank}. {number} plays", value=song_name, inline=False)
+                rank += 1
+            else:
+                pass
+
+        await ctx.channel.send(embed=tracks)
 
 
 def setup(client):

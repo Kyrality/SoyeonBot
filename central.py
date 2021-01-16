@@ -83,4 +83,10 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.MissingPermissions):
         await ctx.send("You are not authorised to use this command")
 
+
+@client.command(pass_content=True)
+async def join(ctx):
+    channel = ctx.message.author.voice.channel
+    await channel.connect()
+
 client.run(client_token)

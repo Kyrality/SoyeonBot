@@ -24,8 +24,9 @@ class Moderation(commands.Cog):
 
         return msg[str(member.guild.id)]
 
-    @commands.command()
-    async def join(self, ctx):
+    @commands.command(aliases=['tj'])
+    @commands.is_owner()
+    async def test_join(self, ctx):
         """Simulates an on_member_join event"""
         await self.on_member_join(ctx.author)
 
