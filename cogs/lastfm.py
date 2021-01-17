@@ -222,7 +222,8 @@ class Lastfm(commands.Cog):
 
         method = 'user.getTopTracks'
         user = self.get_user(ctx)
-        limit = 200
+
+        limit = 1000
 
         rt_params = self.get_params(method, user, time_period, limit)
 
