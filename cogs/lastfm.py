@@ -209,19 +209,29 @@ class Lastfm(commands.Cog):
 
     @commands.command(aliases=['tto', 'toptracksof'])
     async def top_tracks_of(self, ctx, *, artist_period):
-        """Shows most listened tracks of chosen artist for associated LastFM account. Format: ^toptracksof (artist), (period)
+        """Shows most listened tracks of chosen artist for associated LastFM account. Format: ^toptracksof artist period
         Aliases: tto
-        Time periods: week, month, 2 months, 6 months, year. Defaults to overall."""
+        Time periods: week, month, year. Defaults to overall."""
 
-        try:
-            artist, period = artist_period.split(",")
-            time_period = self.get_time_period(period)
-        except:
-            artist = artist_period
-            time_period = 'overall'
+        input_nospace = artist_period.replace(" ", "")
+        input = input_nospace.lower()
+
+        time_period_in = "overall"
+        artist = ""
+
+        if input.endswith("week"):
+            time_period_in = "week"
+            artist = input[:-4]
+        elif input.endswith("month"):
+            time_period_in = "month"
+            artist = input[:-5]
+        elif input.endswith("year"):
+            time_period_in = "year"
+            artist = input[:-4]
 
         method = 'user.getTopTracks'
         user = self.get_user(ctx)
+        time_period = self.get_time_period(time_period_in)
 
         limit = 1000
 
@@ -234,7 +244,9 @@ class Lastfm(commands.Cog):
         rank = 1
 
         for data in response["toptracks"]["track"]:
-            if data["artist"]["name"] == artist and rank <= 10:
+            artist_lower = data["artist"]["name"].lower()
+            artist_nospace = artist_lower.replace(" ", "")
+            if artist_nospace == artist and rank <= 10:
                 song_name = data["name"]
                 number = data["playcount"]
                 tracks.add_field(name=f"{rank}. {number} plays", value=song_name, inline=False)
