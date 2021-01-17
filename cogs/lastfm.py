@@ -217,7 +217,7 @@ class Lastfm(commands.Cog):
         input = input_nospace.lower()
 
         time_period_in = "overall"
-        artist = ""
+        artist = input
 
         if input.endswith("week"):
             time_period_in = "week"
