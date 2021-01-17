@@ -211,7 +211,8 @@ class Lastfm(commands.Cog):
     async def top_tracks_of(self, ctx, *, artist_period):
         """Shows most listened tracks of chosen artist for associated LastFM account. Format: ^toptracksof artist period
         Aliases: tto
-        Time periods: week, month, year. Defaults to overall."""
+        Time periods: week, month, year. Defaults to overall.
+        Note: Only counts within top 1000 listened tracks"""
 
         input_nospace = artist_period.replace(" ", "")
         input = input_nospace.lower()
@@ -233,7 +234,7 @@ class Lastfm(commands.Cog):
         user = self.get_user(ctx)
         time_period = self.get_time_period(time_period_in)
 
-        limit = 1000
+        limit = 1500
 
         rt_params = self.get_params(method, user, time_period, limit)
 
