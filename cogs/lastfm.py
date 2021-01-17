@@ -239,8 +239,8 @@ class Lastfm(commands.Cog):
                 number = data["playcount"]
                 tracks.add_field(name=f"{rank}. {number} plays", value=song_name, inline=False)
                 rank += 1
-            else:
-                pass
+            elif rank > 10:
+                break
 
         await ctx.channel.send(embed=tracks)
 
